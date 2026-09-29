@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Codebled: coding agent requirements questionnaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F3F2; --surface:#FFFFFF; --ink:#15212A; --muted:#566670; --line:#D3DAD9;
+  --accent:#0E6B8C; --accent-ink:#FFFFFF; --soft:#E2EEF2;
+  --amber:#9A5B00; --amber-ink:#FFFFFF; --amber-soft:#FBEBD0;
+  --sk:#5D6F79; --add:#DDF0E1; --del:#F8DDDA; --term:#17242C; --term-ink:#BFD3DB;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E161B; --surface:#152128; --ink:#E5EDF0; --muted:#95A6AF; --line:#2A3A43;
+    --accent:#5EC2E0; --accent-ink:#04202A; --soft:#173039;
+    --amber:#E3A548; --amber-ink:#1E1300; --amber-soft:#3A2A10;
+    --sk:#7C929D; --add:#1C3A28; --del:#43211F; --term:#0A1116; --term-ink:#B9D0D9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E161B; --surface:#152128; --ink:#E5EDF0; --muted:#95A6AF; --line:#2A3A43;
+  --accent:#5EC2E0; --accent-ink:#04202A; --soft:#173039;
+  --amber:#E3A548; --amber-ink:#1E1300; --amber-soft:#3A2A10;
+  --sk:#7C929D; --add:#1C3A28; --del:#43211F; --term:#0A1116; --term-ink:#B9D0D9;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;padding:32px 20px 32px 24px;border-right:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.2;margin-bottom:18px}
+.brand .sub{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);margin-top:3px}
+.prog{margin-bottom:20px;font-size:13px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:14px}
+.nav a:hover{background:var(--soft)}
+.nav a.on{background:var(--soft);font-weight:600}
+.nav .cnt{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nav a.done .cnt{color:var(--accent);font-weight:600}
+
+.topbar{display:none;position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px}
+.topbar .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.topbar select{width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+
+.main{padding:44px 40px 100px 44px;max-width:900px;min-width:0}
+.hero h1{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-.01em;max-width:16ch}
+.hero p{max-width:62ch;color:var(--muted);margin:16px 0 0;font-size:17px}
+.hero p+p{margin-top:10px}
+
+section.scope{padding-top:56px;margin-top:48px;border-top:2px solid var(--ink);scroll-margin-top:24px}
+section.scope h2{font-size:clamp(24px,3.4vw,32px);font-weight:700}
+.why{margin:10px 0 0;max-width:64ch}
+.decides{margin:6px 0 0;color:var(--muted);max-width:64ch;font-size:15px}
+.decides b{color:var(--ink);font-weight:600}
+
+figure.vis{margin:28px 0 8px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+figure.vis figcaption{margin-top:12px;font-size:14px;color:var(--muted);max-width:68ch}
+figure.vis figcaption strong{color:var(--ink)}
+figure.vis svg{display:block;width:100%;height:auto;margin:0 auto}
+
+.key{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 16px;font-size:14px}
+.key li{display:flex;gap:8px;align-items:center}
+.key b{flex:none;width:20px;height:20px;border-radius:50%;background:var(--amber);color:var(--amber-ink);display:grid;place-items:center;font-size:11px}
+
+.sample-task{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0;font-size:14.5px}
+.sample-task dt{color:var(--muted)}
+.sample-task dd{margin:0}
+table.plain{border-collapse:collapse;width:100%;font-size:14.5px}
+table.plain th,table.plain td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.plain th{font-weight:600;color:var(--muted);font-size:13.5px}
+
+.q{margin-top:32px}
+.ql{font-weight:600;font-size:16.5px;max-width:64ch;display:flex;gap:10px}
+.qn{flex:none;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:500;min-width:2.4em}
+.hint{margin:4px 0 0 calc(2.4em + 10px);font-size:14px;color:var(--muted);max-width:60ch}
+.ctl{margin:12px 0 0 calc(2.4em + 10px)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-size:15px;line-height:1.35}
+.opt:hover{border-color:var(--sk)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--soft)}
+.opt input{margin:2px 0 0;accent-color:var(--accent);flex:none}
+input[type=text],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
+textarea{min-height:88px;resize:vertical}
+input[type=text]:focus,textarea:focus{border-color:var(--accent)}
+.mwrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table.matrix{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+table.matrix th,table.matrix td{padding:0;border-bottom:1px solid var(--line)}
+table.matrix tbody tr:last-child th,table.matrix tbody tr:last-child td{border-bottom:0}
+table.matrix thead th{padding:9px 8px;font-size:13px;font-weight:600;color:var(--muted);text-align:center}
+table.matrix tbody th{text-align:left;font-weight:400;padding:9px 12px;min-width:200px}
+table.matrix td{text-align:center;width:1%;white-space:nowrap}
+.cell{display:flex;justify-content:center;padding:9px 14px;cursor:pointer}
+.cell input{accent-color:var(--accent);width:17px;height:17px;margin:0;cursor:pointer}
+table.matrix tr:has(input:checked) th[scope=row]{color:var(--ink)}
+.note{margin-top:34px;padding-top:6px}
+.note .ql{font-weight:500;font-size:15px}
+
+.finish{margin-top:64px;padding-top:40px;border-top:2px solid var(--ink)}
+.finish h2{font-size:clamp(24px,3.4vw,32px)}
+.finish p{max-width:60ch}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{font:inherit;font-weight:600;font-size:15px;padding:11px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn{text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.06)}
+.foot{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.foot a{color:var(--accent)}
+.status{margin-top:12px;min-height:1.5em;font-size:14.5px;color:var(--muted)}
+.export{margin-top:12px;min-height:240px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.export[hidden]{display:none}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .topbar{display:block}
+  .main{padding:28px 16px 80px}
+  .hint,.ctl{margin-left:0}
+  .ql{flex-direction:column;gap:2px}
+  section.scope{margin-top:36px;padding-top:36px}
+  figure.vis{padding:10px}
+}
+
+/* sketch styling */
+svg text{font-family:inherit}
+.frame{fill:var(--surface);stroke:var(--sk);stroke-width:1.2}
+.panel{fill:var(--soft);stroke:var(--sk);stroke-width:.8}
+.card{fill:var(--surface);stroke:var(--sk);stroke-width:1}
+.active{fill:var(--soft);stroke:var(--accent);stroke-width:1.3}
+.btnf{fill:var(--accent);stroke:none}
+.btn2{fill:var(--surface);stroke:var(--sk);stroke-width:1}
+.add{fill:var(--add);stroke:none}
+.del{fill:var(--del);stroke:none}
+.term{fill:var(--term);stroke:none}
+.ln{stroke:var(--sk);stroke-width:1.1;fill:none}
+.uln{stroke:var(--accent);stroke-width:2}
+.dot{fill:var(--sk)}
+.ah{fill:var(--sk)}
+.t{font-size:11px;font-weight:500;fill:var(--ink)}
+.tm{font-size:10.5px;fill:var(--muted)}
+.tb{font-size:11px;font-weight:600;fill:var(--ink)}
+.tw{font-size:10.5px;font-weight:600;fill:var(--accent-ink)}
+.tt{font-size:10px;fill:var(--term-ink);font-family:ui-monospace,Menlo,Consolas,monospace}
+.tc{font-size:10px;fill:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace}
+.cap{font-size:12.5px;font-weight:600;fill:var(--ink)}
+.call circle{fill:var(--amber)}
+.call text{font-size:10px;font-weight:700;fill:var(--amber-ink)}
+.dotf{fill:var(--accent);stroke:var(--accent);stroke-width:1.3}
+.doto{fill:none;stroke:var(--line);stroke-width:1.3}
+.b-human{fill:var(--surface);stroke:var(--sk);stroke-width:1.2;stroke-dasharray:4 3}
+.b-local{fill:var(--soft);stroke:var(--accent);stroke-width:1.3}
+.b-ext{fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.3}
+.b-tool{fill:var(--surface);stroke:var(--sk);stroke-width:1.2}
+.bt{font-size:11.5px;font-weight:600;fill:var(--ink)}
+.bs{font-size:10px;fill:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="row"><strong>Codebled requirements</strong><span id="topcount"></span></div>
+  <div class="bar"><i id="topfill"></i></div>
+  <select id="jump" aria-label="Jump to a section"></select>
+</div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand">Codebled<span class="sub">Coding agent requirements</span></div>
+    <div class="prog"><span id="sidecount"></span><div class="bar"><i id="sidefill"></i></div></div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>What should your coding agent do?</h1>
+      <p>This questionnaire walks through the product one scope at a time. Every scope opens with a sketch or a sample workflow, so you can react to something concrete: keep it, change it, or cross it out. The sketches are proposals, not commitments.</p>
+      <p>Answer what you can and skip the rest. Answers save in this browser as you go. At the end you can copy everything and send it to Codebled at hello@codebled.com.</p>
+    </header>
+    <div id="sections"></div>
+    <section class="finish" id="finish">
+      <h2>Review and send</h2>
+      <p>Copy your answers as plain text and send them to <a href="mailto:hello@codebled.com" style="color:var(--accent)">hello@codebled.com</a>. The email button copies your answers first, then opens a blank email. Paste the answers into it. Anything left blank is marked as not answered, so we know what to follow up on.</p>
+      <div class="actions">
+        <button class="btn" id="copy" type="button">Copy all answers</button>
+        <a class="btn ghost" id="mail" href="mailto:hello@codebled.com?subject=Requirements%20questionnaire%20answers&body=Paste%20your%20copied%20answers%20here.">Email hello@codebled.com</a>
+        <button class="btn ghost" id="show" type="button">Show answers as text</button>
+        <button class="btn ghost" id="clear" type="button">Clear all answers</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <textarea class="export" id="export" readonly hidden aria-label="Answers as plain text"></textarea>
+    </section>
+    <footer class="foot">Prepared by <a href="https://codebled.com" target="_blank" rel="noopener">Codebled</a>. Questions about this form: <a href="mailto:hello@codebled.com">hello@codebled.com</a></footer>
+  </main>
+</div>
+
+<script>
+/* ---------- svg helpers ---------- */
+const R=(x,y,w,h,c='',rx=4)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${c}"/>`;
+const T=(x,y,s,c='t',a='start')=>`<text x="${x}" y="${y}" class="${c}" text-anchor="${a}">${s}</text>`;
+const Ln=(x1,y1,x2,y2,c='ln')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${c}"/>`;
+const Ci=(x,y,r,c='')=>`<circle cx="${x}" cy="${y}" r="${r}" class="${c}"/>`;
+const Call=(x,y,l)=>`<g class="call">${Ci(x,y,9)}<text x="${x}" y="${y+3.6}" text-anchor="middle">${l}</text></g>`;
+const SVG=(w,h,inner,label,scale=1.3)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}" style="max-width:${Math.round(w*scale)}px">${inner}</svg>`;
+
+let uid=0;
+function flow(steps,per,label){
+  uid++;
+  const bw=152,bh=56,gx=32,gy=40,pad=10;
+  const n=steps.length, rows=Math.ceil(n/per), cols=Math.min(per,n);
+  const W=pad*2+cols*bw+(cols-1)*gx, H=pad*2+rows*bh+(rows-1)*gy+34;
+  let s=`<defs><marker id="ah${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>`;
+  steps.forEach((st,i)=>{
+    const r=Math.floor(i/per), c=i%per, x=pad+c*(bw+gx), y=pad+r*(bh+gy);
+    s+=R(x,y,bw,bh,'b-'+st.k,9);
+    s+=T(x+bw/2,y+24,st.t,'bt','middle');
+    if(st.s) s+=T(x+bw/2,y+41,st.s,'bs','middle');
+    if(i<n-1){
+      if(c<per-1){
+        s+=`<line x1="${x+bw}" y1="${y+bh/2}" x2="${x+bw+gx-2}" y2="${y+bh/2}" class="ln" marker-end="url(#ah${uid})"/>`;
+      }else{
+        const my=y+bh+gy/2;
+        s+=`<path d="M${x+bw/2} ${y+bh} V${my} H${pad+bw/2} V${y+bh+gy-2}" class="ln" marker-end="url(#ah${uid})"/>`;
+      }
+    }
+  });
+  const ly=H-24;
+  s+=R(10,ly,14,10,'b-human',3)+T(30,ly+9,'Person','bs');
+  s+=R(90,ly,14,10,'b-local',3)+T(110,ly+9,'Local model','bs');
+  s+=R(200,ly,14,10,'b-ext',3)+T(220,ly+9,'External model','bs');
+  s+=R(320,ly,14,10,'b-tool',3)+T(340,ly+9,'Tool or system','bs');
+  return SVG(W,H,s,label,1.25);
+}
+
+/* ---------- sketches ---------- */
+function surfaces(){
+  let s='';
+  // A desktop
+  s+=R(10,10,210,170,'frame',8)+Ln(10,30,220,30);
+  [22,32,42].forEach(x=>s+=Ci(x,20,2.5,'dot'));
+  s+=Ln(70,30,70,180);
+  s+=R(16,38,48,9,'active',2)+R(16,54,48,9,'panel',2)+R(16,70,48,9,'panel',2)+R(16,86,48,9,'panel',2);
+  s+=R(120,40,90,14,'panel',4)+R(80,62,120,8,'card',3)+R(80,76,90,8,'card',3);
+  s+=R(80,92,130,40,'card',4)+R(81,100,128,10,'del',0)+R(81,112,128,10,'add',0);
+  s+=R(80,144,130,26,'card',6)+R(188,151,16,12,'btnf',3);
+  s+=T(115,202,'Standalone desktop app','cap','middle')+T(115,218,'Own window, most control','tm','middle');
+  // B vscode
+  s+=R(250,10,210,170,'frame',8)+Ln(250,30,460,30);
+  [262,272,282].forEach(x=>s+=Ci(x,20,2.5,'dot'));
+  s+=R(252,32,14,146,'panel',0);
+  [38,50,62,74].forEach(y=>s+=R(270,y,40,6,'card',2));
+  [40,52,76,88,112].forEach(y=>s+=R(322,y,70,6,'card',2));
+  s+=R(322,62,70,8,'add',2)+R(322,98,70,8,'del',2);
+  s+=Ln(400,30,400,180);
+  s+=R(406,40,48,12,'panel',3)+R(406,58,48,26,'card',3)+R(406,146,48,26,'card',4);
+  s+=T(355,202,'VS Code extension','cap','middle')+T(355,218,'Inside the editor they know','tm','middle');
+  // C web
+  s+=R(490,10,210,170,'frame',8)+R(498,16,194,12,'panel',6)+T(506,25,'agent.company.internal','tm');
+  s+=Ln(490,34,700,34);
+  s+=Ln(550,34,550,180);
+  s+=R(496,42,48,9,'active',2)+R(496,58,48,9,'panel',2)+R(496,74,48,9,'panel',2);
+  s+=R(600,44,90,14,'panel',4)+R(560,66,120,8,'card',3)+R(560,80,90,8,'card',3);
+  s+=R(560,96,130,38,'card',4)+R(561,104,128,10,'del',0)+R(561,116,128,10,'add',0);
+  s+=R(560,146,130,26,'card',6)+R(668,153,16,12,'btnf',3);
+  s+=T(595,202,'Internal web app','cap','middle')+T(595,218,'Nothing to install','tm','middle');
+  return SVG(710,226,s,'Three interface options: desktop app, VS Code extension, internal web app');
+}
+
+function deskWire(){
+  let s='';
+  s+=R(10,10,700,400,'frame',10)+Ln(10,38,710,38);
+  [26,40,54].forEach(x=>s+=Ci(x,24,4,'dot'));
+  s+=T(360,28,'billing-service','tb','middle');
+  s+=Ln(190,38,190,410);
+  s+=T(22,58,'Sessions','tm');
+  [['Fix invoice rounding',1],['Add tests: payments',0],['Refactor auth module',0],['Screenshot to form',0]].forEach((r,i)=>{
+    s+=R(18,66+i*32,164,26,r[1]?'active':'panel',6)+T(28,83+i*32,r[0],'t');
+  });
+  s+=R(18,366,164,28,'btn2',6)+T(100,384,'+ New session','t','middle');
+  s+=R(292,50,214,32,'panel',8)+T(302,70,'Fix the invoice rounding bug','t');
+  s+=T(204,104,'I will check how totals are computed.','tm');
+  s+=R(204,114,300,26,'card',6)+T(214,131,'› Read  src/invoice/totals.ts','tc');
+  s+=R(204,146,300,26,'card',6)+T(214,163,'› Search  roundTo( : 6 matches','tc');
+  s+=R(204,180,300,104,'card',6)+T(214,196,'src/invoice/totals.ts','tb')+Ln(204,204,504,204);
+  s+=R(205,208,298,16,'del',0)+T(212,220,'- return Math.round(total * 100) / 100','tc');
+  s+=R(205,226,298,16,'add',0)+T(212,238,'+ return roundHalfEven(total, 2)','tc');
+  s+=R(214,254,62,22,'btnf',5)+T(245,269,'Accept','tw','middle');
+  s+=R(284,254,62,22,'btn2',5)+T(315,269,'Reject','t','middle');
+  s+=R(354,254,74,22,'btn2',5)+T(391,269,'Comment','t','middle');
+  s+=R(204,292,300,26,'card',6)+T(214,309,'› Run  npm test : 12 passed','tc');
+  s+=T(204,340,'Fixed. Want me to open a pull request?','tm');
+  s+=R(204,350,300,48,'card',10)+T(216,369,'Ask, or drop a screenshot here','tm');
+  s+=Ci(222,387,8,'panel')+T(222,391,'+','tb','middle');
+  s+=R(292,378,150,16,'panel',8)+T(367,390,'Local model · $0 external','tm','middle');
+  s+=R(456,376,38,20,'btnf',6)+T(475,390,'Send','tw','middle');
+  s+=Ln(520,38,520,410);
+  s+=T(534,58,'Files','tb')+T(590,58,'Terminal','tm')+Ln(532,64,562,64,'uln');
+  [['▾ src',0,0],['▾ invoice',1,0],['totals.ts',2,1],['format.ts',2,0],['▸ payments',1,0],['▸ tests',0,0],['package.json',0,0]].forEach((r,i)=>{
+    const y=86+i*18;
+    if(r[2]) s+=R(528,y-12,172,17,'active',4);
+    s+=T(536+r[1]*12,y,r[0],'t');
+  });
+  s+=Ln(520,222,710,222);
+  s+=T(534,240,'Terminal','tm');
+  s+=R(530,246,170,154,'term',6);
+  ['$ npm test','PASS totals.test.ts','PASS format.test.ts','Tests: 12 passed'].forEach((l,i)=>s+=T(538,264+i*16,l,'tt'));
+  s+=Call(190,100,'A')+Call(504,127,'B')+Call(504,232,'C')+Call(204,350,'D')+Call(292,386,'E')+Call(520,150,'F')+Call(296,24,'G');
+  return SVG(720,420,s,'Wireframe of the desktop agent interface with lettered callouts A to G',1.3);
+}
+
+function interactions(){
+  let s='';
+  s+=R(10,10,340,180,'frame',10)+T(24,34,'The agent wants to run a command','tb');
+  s+=R(24,46,312,28,'term',5)+T(34,64,'$ npm run build && npm test','tt');
+  s+=T(24,96,'Working directory: billing-service','tm');
+  s+=R(24,112,86,26,'btnf',6)+T(67,129,'Allow once','tw','middle');
+  s+=R(118,112,140,26,'btn2',6)+T(188,129,'Always in this project','t','middle');
+  s+=R(266,112,70,26,'btn2',6)+T(301,129,'Deny','t','middle');
+  s+=T(24,166,'Autonomy setting: ask every time','tm');
+  s+=R(370,10,340,180,'frame',10)+T(384,34,'Proposed plan','tb');
+  s+=T(384,60,'1   Change the rounding in totals.ts','t')+T(384,80,'2   Add a test for half-cent values','t')+T(384,100,'3   Run the full test suite','t');
+  s+=R(384,124,96,26,'btnf',6)+T(432,141,'Approve plan','tw','middle');
+  s+=R(488,124,70,26,'btn2',6)+T(523,141,'Edit','t','middle');
+  s+=T(384,166,'Plan mode: the agent waits before editing','tm');
+  return SVG(720,200,s,'Two sample prompts: a permission request and a plan approval');
+}
+
+function gallery(){
+  let s='';
+  const xs=[10,190,370,550];
+  xs.forEach(x=>s+=R(x,10,160,110,'frame',8));
+  // screenshot
+  let x=xs[0];
+  s+=R(x+10,20,140,10,'panel',2)+R(x+10,36,60,76,'card',3)+R(x+78,36,72,34,'active',3)+R(x+78,76,72,36,'card',3);
+  // diagram
+  x=xs[1];
+  s+=R(x+14,34,44,24,'card',4)+R(x+102,34,44,24,'card',4)+R(x+58,84,44,24,'card',4);
+  s+=Ln(x+58,46,x+102,46)+Ln(x+36,58,x+70,84)+Ln(x+124,58,x+90,84);
+  // pdf
+  x=xs[2];
+  s+=R(x+42,18,76,94,'card',4);
+  [30,42,54,66,78,90].forEach((y,i)=>s+=R(x+52,y,i%3===2?36:56,5,'panel',2));
+  // audio
+  x=xs[3];
+  [8,18,30,20,38,26,14,34,22,10,28,16].forEach((h,i)=>s+=Ln(x+20+i*10.5,50-h/2+8,x+20+i*10.5,50+h/2+8,'uln'));
+  s+=R(x+50,86,60,22,'panel',11)+`<polygon points="${x+74},91 ${x+74},103 ${x+85},97" class="dot"/>`;
+  const caps=[['Screenshot or mockup','UI to code, bug reports'],['Diagram','Architecture, flows'],['PDF or document','Specs, API docs'],['Audio or video','Meetings, screen recordings']];
+  caps.forEach((c,i)=>{ s+=T(xs[i]+80,140,c[0],'cap','middle')+T(xs[i]+80,157,c[1],'tm','middle'); });
+  return SVG(720,168,s,'Four kinds of multimodal input: screenshot, diagram, PDF, audio or video');
+}
+
+
+function stack(){
+  let s='';
+  const cols=[['Model only',470],['Plus serving',536],['Plus agent',602],['Full product',668]];
+  cols.forEach(c=>s+=T(c[1],26,c[0],'tm','middle'));
+  const rows=[
+    ['Multi-customer platform','Tenants, sign-in, admin, spend tracking',[0,0,0,1]],
+    ['Interface','Desktop app, VS Code extension or web',[0,0,0,1]],
+    ['Agent','Edits files, runs commands, asks permission',[0,0,1,1]],
+    ['Serving and codebase search','Runs models on GPUs, searches your code',[0,1,1,1]],
+    ['The model','A small coding model adapted to your work',[1,1,1,1]]
+  ];
+  rows.forEach((r,i)=>{
+    const y=40+i*52;
+    s+=R(10,y,420,44,i===4?'b-local':'b-tool',9);
+    s+=T(24,y+19,r[0],'bt')+T(24,y+34,r[1],'bs');
+    r[2].forEach((on,j)=>{ s+=Ci(cols[j][1],y+22,7,on?'dotf':'doto'); });
+  });
+  return SVG(720,304,s,'Layers of a coding assistant and which layers each package includes');
+}
+
+const FLOW_TICKET=()=>flow([
+  {k:'human',t:'Ticket or bug report',s:'You paste a link or text'},
+  {k:'tool',t:'Find relevant code',s:'Codebase search'},
+  {k:'local',t:'Plan the fix',s:'Local coding model'},
+  {k:'tool',t:'Edit files',s:'Agent changes the code'},
+  {k:'tool',t:'Run tests',s:'Your test command'},
+  {k:'human',t:'Review the diff',s:'Accept or reject'},
+  {k:'tool',t:'Commit or open PR',s:'Via your Git host'}
+],4,'Workflow for fixing a bug from a ticket');
+
+const FLOW_IMAGE=()=>flow([
+  {k:'human',t:'Screenshot / mockup',s:'Dropped into the chat'},
+  {k:'local',t:'Read the image',s:'Vision model to UI spec'},
+  {k:'tool',t:'Match design system',s:'Your component library'},
+  {k:'local',t:'Write the code',s:'Local coding model'},
+  {k:'tool',t:'Preview',s:'Render and compare'},
+  {k:'human',t:'Review',s:'Accept or ask for changes'}
+],3,'Workflow for turning a screenshot into working code');
+
+const FLOW_ESC=()=>flow([
+  {k:'human',t:'Task starts',s:'From chat or a ticket'},
+  {k:'local',t:'Local model tries',s:'Up to 2 attempts'},
+  {k:'tool',t:'Check the result',s:'Tests, lint, build'},
+  {k:'ext',t:'Escalate if needed',s:'Stronger external model'},
+  {k:'tool',t:'Budget check',s:'Stops at the monthly cap'},
+  {k:'human',t:'Result for review',s:'Shows which model ran'}
+],3,'Workflow for escalating from a local model to a capped external model');
+
+const FLOW_ONB=()=>flow([
+  {k:'human',t:'Contract signed',s:'New customer org'},
+  {k:'tool',t:'Create tenant',s:'Isolated data and keys'},
+  {k:'tool',t:'Connect repos',s:'GitHub, GitLab, other'},
+  {k:'local',t:'Index the code',s:'Embeddings per tenant'},
+  {k:'tool',t:'Set up sign-in',s:'SSO or accounts'},
+  {k:'human',t:'Pilot developers',s:'First 5 to 10 users'},
+  {k:'human',t:'Go live',s:'Usage and spend reports'}
+],4,'Workflow for onboarding a new customer organization');
+
+const FLOW_ARCH=()=>flow([
+  {k:'human',t:'Developer',s:'Desktop, VS Code or web'},
+  {k:'tool',t:'Agent server',s:'Sessions and tools'},
+  {k:'tool',t:'Model gateway',s:'Routing and budgets'},
+  {k:'local',t:'Local models',s:'Code, vision, embeddings'},
+  {k:'ext',t:'External model',s:'Optional and capped'}
+],3,'Simplified system layout from developer to models');
+
+/* ---------- question builders ---------- */
+const MUST=['Must have','Nice to have','Not needed'];
+const ASK=['Ask every time','Ask once per project','Automatic'];
+const one=(id,label,opts,hint)=>({id,t:'one',label,opts,hint});
+const many=(id,label,opts,hint)=>({id,t:'many',label,opts,hint});
+const txt=(id,label,hint,long=true)=>({id,t:'txt',label,hint,long});
+const mat=(id,label,rows,cols,hint)=>({id,t:'mat',label,rows,cols:cols||MUST,hint});
+
+const SECS=[
+{id:'about',title:'About the product and your team',
+ why:`A few basics so we know who is answering and what you are building.`,
+ decides:`<b>This decides:</b> who signs off on scope and which parts of this document apply to you.`,
+ vis:[],
+ q:[
+  txt('a_who','Your name and role',null,false),
+  txt('a_co','Company and the name of the product you plan to sell',null,false),
+  one('a_users','Who will use the product?',['Our own developers only',`Our customers' developers (we resell it)`,'Both']),
+  one('a_stage','Where are you today?',['Idea stage','We have a prototype','Customers are waiting for it','Replacing a tool we already use']),
+  txt('a_tools','Which coding tools do your developers use today?',`For example Claude Code, Cursor, Copilot, or none. Say what you like and dislike about each.`)
+ ]},
+{id:'scope',title:'What you want us to build',
+ why:`"Small language model" can mean several different projects. Some teams want only the model. Others want a whole coding agent around it. The sketch shows the layers, so you can point at the ones you expect from us.`,
+ decides:`<b>This decides:</b> whether this is a model project, an agent project or a full product. That changes the team, the timeline and the price more than any other answer.`,
+ vis:[{h:stack,cap:`<strong>The layers of a coding assistant.</strong> Filled dots show what each package includes. A model on its own is the first column. A tool like Claude Code is an agent and interface built around a model.`}],
+ q:[
+  mat('p_layers','Which layers do you expect us to build?',['Adapt a small model for coding','Serve the model on GPUs','Search across your codebase','Agent that edits files and runs commands','Interface (desktop, VS Code or web)','Multi-customer platform (tenants, sign-in)','Admin dashboard and spend tracking','Deployment automation'],['We build it','You provide it','Not needed'],`Mark each layer from the sketch above.`),
+  one('p_prod','Is the model itself the product?',['Yes, we plan to sell or license the model itself','No, the model is one part of a larger product','Not sure']),
+  many('p_why','Why a small model?',['Lower cost per use','Code must stay private','Must work offline','Control and ownership','Faster responses','Something we can sell']),
+  one('p_src','How should the model be obtained?',['Start from an open model and adapt it','Train a model from scratch','Use a model we already have','Not sure, advise us'],`Training from scratch needs far more data, time and money than adapting an existing open model. Most projects do not need it.`),
+  one('p_size','What does small mean for you?',['Runs on a laptop or workstation (roughly 1B to 7B parameters)','Runs on one server GPU (roughly 7B to 32B)','Can be larger if quality needs it','Not sure']),
+  one('p_run','Where must the model run?',['Developer laptops','Our company servers',`Our customers' servers`,'Cloud GPUs','A mix']),
+  one('p_data','Do you have training data?',['Yes, cleaned and ready','Yes, but raw code needs cleaning','Only some','No']),
+  one('p_lic','What licence rules apply to the base model?',['Fully permissive only (for example Apache 2.0)','Restricted licences are fine if they allow resale','Not sure'],`The licence decides whether you may legally sell the result.`),
+  one('p_own','Who should own the adapted model?',['You own the model weights','A licence to use and resell is enough','Not decided']),
+  one('p_after','Should the model keep improving after launch?',['Yes, regular retraining on new code','Occasional updates','No, fixed once delivered']),
+  one('p_gen','What should the model handle beyond code?',['Code only','Code plus general questions','Code plus documents and images']),
+  txt('p_goal','In your own words, what outcome do you expect from the small model?',`For example: cut external model bills, keep code inside the company, or give customers their own private assistant.`)
+ ]},
+{id:'biz',title:'Business model and customer onboarding',
+ why:`How the product reaches customers decides how much of the system is about tenants, licences and setup rather than the agent itself.`,
+ decides:`<b>This decides:</b> multi-tenancy design, licensing, and how much deployment automation is needed.`,
+ vis:[{h:FLOW_ONB,cap:`<strong>Sample workflow: onboarding a new customer organization.</strong> Steps with a dashed outline are done by people. Repeating this quickly for many customers is what deployment automation is for.`}],
+ q:[
+  one('b_sell','How will you sell it?',['Per-seat subscription (hosted)','One installation per customer (on their servers)','Both','Not decided']),
+  one('b_orgs','How many customer organizations in the first year?',['1 to 3','4 to 10','11 to 50','More than 50']),
+  one('b_devs','How many developers does a typical customer have?',['Under 20','20 to 100','100 to 500','More than 500']),
+  mat('b_onb','In the onboarding workflow above, who should do each step?',['Create the tenant','Connect repositories','Index the code','Set up sign-in','Train the customer developers','Ongoing support'],['Your team','Builder','Customer IT'],`Pick the owner you expect for each step.`),
+  one('b_brand','Branding for each customer',['Fully white-labeled per customer','Your brand only','Small builder credit is fine','Not decided']),
+  txt('b_ask','What have customers already asked for?',null)
+ ]},
+{id:'users',title:'Users and everyday tasks',
+ why:`Autocomplete, chat and long autonomous tasks need very different models and hardware. This tells us which ones matter to your users.`,
+ decides:`<b>This decides:</b> model choice, response-time targets and GPU size.`,
+ vis:[],
+ q:[
+  many('u_roles','Who are the users?',['Backend developers','Frontend developers','Mobile developers','DevOps or infrastructure','QA or test engineers','Data or ML engineers','Non-developers (analysts, product managers)']),
+  mat('u_tasks','Which tasks should the agent handle?',['Autocomplete while typing','Answer questions about the codebase','Fix bugs from tickets','Build new features','Write tests','Refactor or migrate code','Review code changes','Write docs and commit messages','Infrastructure scripts (Terraform, CI)']),
+  txt('u_lang','Main programming languages and frameworks',null,false),
+  one('u_len','How long should one agent task be able to run?',['Seconds (small edits)','A few minutes','Up to 30 minutes','Hours, mostly unattended'],`Longer runs need stronger models and cost more.`)
+ ]},
+{id:'agent',title:'How the agent works',
+ why:`Below is a typical task from ticket to pull request. Use it to tell us where the agent should act alone and where a person must stay in control.`,
+ decides:`<b>This decides:</b> permission model, the tools we build, and how much testing the agent needs.`,
+ vis:[
+  {h:FLOW_TICKET,cap:`<strong>Sample workflow: fixing a bug from a ticket.</strong> Blue steps run on a local model. Dashed steps are done by a person. Grey steps are tools the agent uses.`},
+  {h:interactions,cap:`<strong>Sample prompts.</strong> Left: a permission request before a command runs. Right: a plan the developer approves before any file changes.`}
+ ],
+ q:[
+  mat('g_auto','How much freedom should the agent have?',['Search the codebase','Edit files','Run tests','Run other shell commands','Install packages','Commit to Git','Push or open a pull request','Browse the web'],ASK),
+  many('g_tools','Which tools should the agent be able to use?',['Read and write files','Terminal and shell','Git','Web search and fetch','Your internal tools (MCP servers)','Ticket system (Jira, Linear, other)','CI/CD','Read-only database access','Cloud and infrastructure commands']),
+  one('g_plan','Should the agent show a plan and wait for approval before editing?',['Always','Only for big tasks','Never']),
+  one('g_par','How many tasks at once?',['One at a time','Several sessions per developer','Background agents that run unattended']),
+  txt('g_own','Describe one real task your developers do often, from start to finish.',`Write it like the sample workflow: what triggers it, what they do, what counts as done.`)
+ ]},
+{id:'ui',title:'Interface',
+ why:`Where the agent lives changes the amount of work more than any other choice here. The sketches show the three options and one possible layout.`,
+ decides:`<b>This decides:</b> frontend effort, which surfaces we build first, and the delivery timeline.`,
+ vis:[
+  {h:surfaces,cap:`<strong>Three ways to deliver the same agent.</strong> One agent core can serve all three, but each one needs its own build and testing.`},
+  {h:()=>deskWire()+`<ul class="key">${[['A','Session list and history'],['B','Collapsible tool-call cards'],['C','Inline diff review'],['D','Attach files and images'],['E','Model and external-spend indicator'],['F','File tree and terminal'],['G','Project or workspace switcher']].map(k=>`<li><b>${k[0]}</b>${k[1]}</li>`).join('')}</ul>`,
+   cap:`<strong>Sample desktop layout.</strong> This shows workflow patterns, not a visual design. We will create a separate visual identity for your product.`}
+ ],
+ q:[
+  one('i_surf','Which surface should come first?',['Standalone desktop app','VS Code extension','Internal web app','Terminal (command line)','Not sure, recommend one']),
+  many('i_os','Which desktop systems must it run on?',['Windows','macOS','Linux']),
+  mat('i_feat','Which interface features do you need?',['A: Session list and history','B: Collapsible tool-call cards','C: Inline diff review (accept or reject)','D: Attach files and images','E: Model and external-spend indicator','F: File tree and terminal','G: Project or workspace switcher','Permission prompts','Plan mode','Light and dark themes','Keyboard shortcuts','Admin dashboard (users, usage, spend)']),
+  one('i_look','Look and feel',['We provide brand guidelines','We design a new identity for you','Familiar workflow, clearly distinct visuals','Not decided'],`We take workflow ideas from popular tools but do not copy their names, logos or visual identity.`),
+  txt('i_ref','Interfaces you like, or dislike',`Paste links or describe screenshots you will send. Any product counts.`)
+ ]},
+{id:'mm',title:'Multimodal input',
+ why:`"Multimodal" can mean anything from screenshots to meeting recordings. Each type needs a different model, so we want the real list.`,
+ decides:`<b>This decides:</b> which vision and audio models we run, and how much GPU memory they need.`,
+ vis:[
+  {h:gallery,cap:`<strong>Kinds of input the agent could accept.</strong>`},
+  {h:FLOW_IMAGE,cap:`<strong>Sample workflow: screenshot to working screen.</strong> A vision model turns the image into a written UI description. The coding model then writes code from that description.`}
+ ],
+ q:[
+  mat('m_in','Which inputs matter?',['Screenshots of an app or a bug','UI mockups (Figma exports)','Architecture or flow diagrams','PDF specs and documents','Scanned pages or handwritten notes','Audio (meeting recordings)','Video (screen recordings)']),
+  txt('m_use','What should the agent do with them?',`For example: turn a mockup into a React screen, or find the bug shown in a screenshot.`),
+  one('m_vol','How many images or documents per developer per day?',['A few (1 to 5)','Some (5 to 20)','Many (more than 20)']),
+  one('m_acc','What output quality is acceptable?',['Rough draft I will fix','Close to final, minor edits','Pixel-accurate to the design']),
+  txt('m_samples','Can you share 5 to 10 real examples? Where are they?',`Real samples let us test models before we promise anything.`)
+ ]},
+{id:'models',title:'Local models and external calls',
+ why:`Running models yourselves is how external cost comes down, but local models are weaker on long, hard tasks. This scope sets the rules for when the agent may call an outside model.`,
+ decides:`<b>This decides:</b> routing rules, spend caps, and how much of the data can leave your network.`,
+ vis:[
+  {h:FLOW_ESC,cap:`<strong>Sample workflow: local first, external only when needed.</strong> Every escalation is counted against a cap and shown to the developer.`},
+  {h:()=>`<table class="plain"><thead><tr><th>Rule</th><th>Example value</th></tr></thead><tbody>
+    <tr><td>Local attempts before escalating</td><td>2</td></tr>
+    <tr><td>External spend per developer per month</td><td>Up to $15</td></tr>
+    <tr><td>What may be sent outside</td><td>Current file and task text only</td></tr>
+    <tr><td>When the cap is reached</td><td>Keep working locally and show a notice</td></tr>
+  </tbody></table>`,cap:`<strong>Sample policy.</strong> The values are placeholders. Your answers below replace them.`}
+ ],
+ q:[
+  one('l_off','How should external models be handled?',['The system must work fully offline','A small, capped fallback is fine','External is fine, just reduce cost','Not decided']),
+  one('l_cap','If a fallback is allowed, what monthly cap per developer?',['Under $5','$5 to $20','$20 to $50','Set per customer']),
+  many('l_trig','Escalate to an external model when',['Tests keep failing','The task looks complex or architectural','The developer clicks "use stronger model"','The local model seems unsure','Never automatically. Always ask first.']),
+  one('l_data','What may leave your network in a fallback call?',['Nothing but anonymized snippets','Only the current file or snippet','Task context including relevant code','Not decided']),
+  txt('l_prov','Approved or banned external providers',null,false),
+  txt('l_target','What is your target for external spend?',`For example: under 10% of tasks, or under $X per developer per month.`,false),
+  one('l_qual','How close to frontier-model quality must local models be?',['Close, for everyday tasks','Weaker is fine if it is cheaper','Not sure, show us a demo'])
+ ]},
+{id:'code',title:'Codebase and knowledge',
+ why:`The agent is only useful on your code if it can search it. The size and location of your repositories shape the search system.`,
+ decides:`<b>This decides:</b> indexing design, storage, and the rules for keeping the index up to date and permission-safe.`,
+ vis:[],
+ q:[
+  many('c_host','Where does the code live?',['GitHub','GitLab','Bitbucket','Azure DevOps','Self-hosted Git','Other']),
+  one('c_size','Total code size per organization',['Under 100k lines','100k to 1M lines','1M to 10M lines','More than 10M lines']),
+  one('c_repos','Repositories per organization',['1 to 10','10 to 50','50 to 200','More than 200']),
+  many('c_docs','What else should the agent know?',['Wiki (Confluence, Notion)','API specs (OpenAPI)','Tickets','Pull request history and review comments','Design documents','Runbooks']),
+  one('c_fresh','How fresh must the index be?',['On every commit','Hourly','Nightly','On demand']),
+  one('c_perm','Should search respect repository permissions?',['Yes, strictly','Team level only','No, everyone sees everything']),
+  one('c_sec','Do repositories contain secrets or regulated data to exclude?',['Yes, we know where','Probably','No',`Don't know`]),
+  one('c_ft','Should the model be fine-tuned on customer code?',['Yes, per customer','Yes, shared across customers with consent','No, search only','Not sure'])
+ ]},
+{id:'sec',title:'Security and multi-tenancy',
+ why:`When one product serves many organizations, keeping their code and data apart is the most important design rule.`,
+ decides:`<b>This decides:</b> whether we deploy one stack per customer or a shared one, plus sign-in, logging and compliance work.`,
+ vis:[],
+ q:[
+  one('s_iso','How separate must customers be from each other?',['Separate deployment per customer','Shared servers, separate data and keys','Shared, with logical separation','Not decided']),
+  many('s_auth','Sign-in methods',['SSO (SAML or OIDC)','Email and password','Google or Microsoft accounts','API keys for command-line use','Automatic user provisioning (SCIM)']),
+  many('s_log','Logging and audit',['Log every prompt and tool call','Log only metadata (who, when, cost)','Configurable retention period','Export to a security monitoring tool','Never store code content in logs']),
+  one('s_net','Network setup',['Fully air-gapped','On the customer network with limited internet','Cloud hosted','A mix']),
+  one('s_sand','Where should agent commands run?',['On the developer machine','In a sandbox on a server','Both, configurable']),
+  many('s_comp','Compliance requirements',['SOC 2','ISO 27001','GDPR','HIPAA','India DPDP Act','None yet']),
+  txt('s_doc','Existing security requirement documents',`Name or link them. We will read them before quoting.`,false)
+ ]},
+{id:'infra',title:'Infrastructure and deployment',
+ why:`Models need GPUs. How many, and who owns them, decides both the cost and how many developers each server can support.`,
+ decides:`<b>This decides:</b> hardware sizing, deployment tooling, and running costs.`,
+ vis:[{h:FLOW_ARCH,cap:`<strong>Simplified system layout.</strong> The gateway sends each request to a local model, or to the capped external model when a rule says so.`}],
+ q:[
+  one('n_hw','GPU hardware today',['None','Cloud GPUs available','On-premises GPU servers','We will buy and need sizing help']),
+  txt('n_gpu','GPU models and memory, if known',null,false),
+  one('n_conc','Peak simultaneous agent sessions per organization',['Under 5','5 to 20','20 to 50','More than 50']),
+  many('n_dep','How should it be deployed?',['Docker Compose','Kubernetes','Terraform or Helm','Virtual machine images','Hosted and managed by you']),
+  many('n_cloud','Where can it run?',['AWS','Azure','Google Cloud','On-premises only','Must use an Indian region']),
+  one('n_ops','Who runs it after launch?',['Your team','The builder (managed service)','Shared']),
+  one('n_upd','How should model updates work?',['Manual approval each time','Automatic within a tested list','Frozen versions'])
+ ]},
+{id:'quality',title:'Quality and success',
+ why:`"Works well" needs a number. A set of real tasks with pass or fail checks lets us prove the agent is good enough, and lets you check our work.`,
+ decides:`<b>This decides:</b> the acceptance criteria in the contract and how we tune the models.`,
+ vis:[{h:()=>`<dl class="sample-task">
+    <dt>Task</dt><dd>Add pagination to the GET /invoices endpoint</dd>
+    <dt>Repository</dt><dd>billing-service, main branch at a fixed commit</dd>
+    <dt>Pass check</dt><dd>The invoices tests pass and lint is clean</dd>
+    <dt>Time limit</dt><dd>10 minutes</dd>
+    <dt>Difficulty</dt><dd>Medium: touches three files</dd>
+  </dl>`,cap:`<strong>Sample test task.</strong> We would like 10 to 50 of these from your real work. We run them against the agent and report the pass rate, the cost per task and how often it needed an external model.`}],
+ q:[
+  one('y_set','Can you provide real tasks with pass or fail checks?',['Yes, 50 or more','Yes, 10 to 50','Some, and we need help writing more','No']),
+  many('y_met','How will you judge success?',['Tasks finished without human edits','Tests passing','Cost per completed task','Speed of first response','Developer satisfaction','Share of tasks that needed an external model']),
+  one('y_lat','Autocomplete response time',['Under 300 ms','Under 1 second','Under 3 seconds','Not needed']),
+  txt('y_bar','What result would make the pilot a success?',`Numbers help. For example: 60% of test tasks pass, and external spend stays under $10 per developer.`),
+  txt('y_base','What do you compare against today?',null,false),
+  txt('y_fail','What would make you stop the project?',null)
+ ]},
+{id:'delivery',title:'Timeline, budget and ownership',
+ why:`The last scope fixes how the work is phased and who owns what once it is built.`,
+ decides:`<b>This decides:</b> the phase plan, payment milestones and contract terms.`,
+ vis:[],
+ q:[
+  one('d_when','Target date for a first working version',['30 days','60 days','90 days','120 days or more','Flexible']),
+  one('d_ph','How should we phase the work?',['One delivery','Pilot first, then production','Paid discovery first, then a pilot']),
+  one('d_bud','Budget range',['Not set','Up to ₹10 lakh','₹10 to 30 lakh','₹30 to 60 lakh','Above ₹60 lakh']),
+  one('d_ip','Who owns the result?',['You own everything','Builder keeps reusable tooling, you own customizations','Builder licenses it to you','Not decided']),
+  one('d_sup','After launch',['No support','Bug-fix warranty only','Monthly retainer (updates and support)','Fully managed service']),
+  txt('d_must','Three things that must be true at launch',null),
+  txt('d_later','What can wait for a second phase?',null),
+  txt('d_sign','Who signs off on scope and acceptance?',null,false)
+ ]}
+];
+
+/* ---------- state ---------- */
+const KEY='coding-agent-questionnaire-v1';
+let answers={};
+try{answers=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){answers={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(answers))}catch(e){}};
+const Q={};
+SECS.forEach(s=>{s.q.forEach(q=>Q[q.id]=q); Q[s.id+'_notes']={id:s.id+'_notes',t:'note'};});
+
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ---------- render ---------- */
+function ctl(q){
+  const a=answers[q.id];
+  if(q.t==='one') return `<div class="opts">${q.opts.map(o=>`<label class="opt"><input type="radio" name="${q.id}" data-q="${q.id}" value="${esc(o)}"${a===o?' checked':''}><span>${esc(o)}</span></label>`).join('')}</div>`;
+  if(q.t==='many') return `<div class="opts">${q.opts.map(o=>`<label class="opt"><input type="checkbox" name="${q.id}" data-q="${q.id}" value="${esc(o)}"${Array.isArray(a)&&a.includes(o)?' checked':''}><span>${esc(o)}</span></label>`).join('')}</div>`;
+  if(q.t==='txt'){
+    const v=esc(a||'');
+    return q.long?`<textarea id="f-${q.id}" data-q="${q.id}" aria-labelledby="lb-${q.id}">${v}</textarea>`:`<input type="text" id="f-${q.id}" data-q="${q.id}" aria-labelledby="lb-${q.id}" value="${v}">`;
+  }
+  if(q.t==='mat') return `<div class="mwrap"><table class="matrix"><thead><tr><th scope="col"><span class="sr" hidden>Item</span></th>${q.cols.map(c=>`<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${q.rows.map((r,i)=>`<tr><th scope="row">${esc(r)}</th>${q.cols.map(c=>`<td><label class="cell"><input type="radio" name="${q.id}__${i}" data-q="${q.id}" data-row="${i}" value="${esc(c)}" aria-label="${esc(r)}: ${esc(c)}"${a&&a[i]===c?' checked':''}></label></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return '';
+}
+
+function renderSections(){
+  const host=document.getElementById('sections');
+  host.innerHTML=SECS.map((s,si)=>{
+    const vis=s.vis.map(v=>`<figure class="vis">${v.h()}<figcaption>${v.cap}</figcaption></figure>`).join('');
+    const qs=s.q.map((q,qi)=>`<div class="q" role="group" aria-labelledby="lb-${q.id}"><div class="ql" id="lb-${q.id}"><span class="qn">${si+1}.${qi+1}</span><span>${esc(q.label)}</span></div>${q.hint?`<p class="hint">${esc(q.hint)}</p>`:''}<div class="ctl">${ctl(q)}</div></div>`).join('');
+    const nid=s.id+'_notes';
+    const note=`<div class="q note"><label class="ql" id="lb-${nid}" for="f-${nid}"><span class="qn"></span><span>Anything else about this scope?</span></label><div class="ctl"><textarea id="f-${nid}" data-q="${nid}">${esc(answers[nid]||'')}</textarea></div></div>`;
+    return `<section class="scope" id="s-${s.id}"><h2>${si+1}. ${esc(s.title)}</h2><p class="why">${s.why}</p><p class="decides">${s.decides}</p>${vis}${qs}${note}</section>`;
+  }).join('');
+  document.getElementById('nav').innerHTML=SECS.map((s,si)=>`<a href="#s-${s.id}" data-s="${s.id}"><span>${si+1}. ${esc(s.title)}</span><span class="cnt"></span></a>`).join('')+`<a href="#finish"><span>Review and send</span><span class="cnt"></span></a>`;
+  document.getElementById('jump').innerHTML=SECS.map((s,si)=>`<option value="s-${s.id}">${si+1}. ${esc(s.title)}</option>`).join('')+`<option value="finish">Review and send</option>`;
+}
+
+function isAnswered(q){
+  const a=answers[q.id];
+  if(q.t==='one') return !!a;
+  if(q.t==='many') return Array.isArray(a)&&a.length>0;
+  if(q.t==='txt') return !!(a&&a.trim());
+  if(q.t==='mat') return !!a&&q.rows.every((r,i)=>a[i]);
+  return false;
+}
+
+function updateProgress(){
+  let done=0,total=0;
+  SECS.forEach(s=>{
+    const d=s.q.filter(isAnswered).length;
+    done+=d; total+=s.q.length;
+    const a=document.querySelector(`.nav a[data-s="${s.id}"]`);
+    if(a){a.querySelector('.cnt').textContent=d+'/'+s.q.length; a.classList.toggle('done',d===s.q.length);}
+  });
+  const pct=total?Math.round(done/total*100):0;
+  const label=done+' of '+total+' answered';
+  document.getElementById('sidecount').textContent=label;
+  document.getElementById('topcount').textContent=label;
+  document.getElementById('sidefill').style.width=pct+'%';
+  document.getElementById('topfill').style.width=pct+'%';
+}
+
+/* ---------- events ---------- */
+function onInput(e){
+  const el=e.target, id=el.dataset&&el.dataset.q;
+  if(!id||!Q[id]) return;
+  const q=Q[id];
+  if(q.t==='txt'||q.t==='note') answers[id]=el.value;
+  else if(q.t==='one') answers[id]=el.value;
+  else if(q.t==='many') answers[id]=[...document.querySelectorAll(`input[data-q="${id}"]:checked`)].map(i=>i.value);
+  else if(q.t==='mat'){ answers[id]=answers[id]||{}; answers[id][el.dataset.row]=el.value; }
+  save(); updateProgress();
+}
+document.addEventListener('input',onInput);
+document.addEventListener('change',onInput);
+
+document.getElementById('jump').addEventListener('change',e=>{
+  const t=document.getElementById(e.target.value); if(t) t.scrollIntoView();
+});
+
+/* ---------- export ---------- */
+function fmt(q){
+  const a=answers[q.id];
+  if(q.t==='mat') return q.rows.map((r,i)=>`- ${r}: ${(a&&a[i])||'(not answered)'}`).join('\n');
+  if(q.t==='many') return Array.isArray(a)&&a.length?a.map(x=>`- ${x}`).join('\n'):'(not answered)';
+  return a&&String(a).trim()?String(a).trim():'(not answered)';
+}
+function build(){
+  let o='# Requirements questionnaire for Codebled: answers\n\n';
+  SECS.forEach((s,si)=>{
+    o+=`## ${si+1}. ${s.title}\n\n`;
+    s.q.forEach((q,qi)=>{ o+=`**${si+1}.${qi+1} ${q.label}**\n${fmt(q)}\n\n`; });
+    const n=answers[s.id+'_notes'];
+    if(n&&n.trim()) o+=`**Other notes**\n${n.trim()}\n\n`;
+  });
+  return o;
+}
+const box=document.getElementById('export'), status=document.getElementById('status');
+document.getElementById('show').addEventListener('click',()=>{ box.value=build(); box.hidden=false; status.textContent='Select all of the text below and copy it.'; });
+document.getElementById('copy').addEventListener('click',async()=>{
+  const text=build(); let ok=false;
+  try{ await navigator.clipboard.writeText(text); ok=true; }catch(e){
+    try{ box.value=text; box.hidden=false; box.select(); ok=document.execCommand('copy'); }catch(e2){ ok=false; }
+  }
+  if(ok){ status.textContent='Copied. Paste it into an email or document and send it back.'; }
+  else { box.value=text; box.hidden=false; box.select(); status.textContent='Automatic copy is blocked here. Copy the selected text below.'; }
+});
+document.getElementById('mail').addEventListener('click',async()=>{
+  const text=build();
+  try{ await navigator.clipboard.writeText(text); status.textContent='Answers copied. Paste them into the email that opens. If no email opens, send them to hello@codebled.com.'; }
+  catch(e){ box.value=text; box.hidden=false; box.select(); status.textContent='Copy the selected text below, then email it to hello@codebled.com.'; }
+});
+let armed=false;
+const clr=document.getElementById('clear');
+clr.addEventListener('click',()=>{
+  if(!armed){ armed=true; clr.textContent='Click again to erase all answers'; setTimeout(()=>{armed=false;clr.textContent='Clear all answers';},4000); return; }
+  answers={}; save(); armed=false; clr.textContent='Clear all answers'; box.hidden=true; status.textContent='All answers cleared.';
+  renderSections(); updateProgress(); observe();
+});
+
+/* ---------- active section highlight ---------- */
+let io=null;
+function observe(){
+  try{
+    if(io) io.disconnect();
+    io=new IntersectionObserver(es=>{
+      es.forEach(en=>{ if(en.isIntersecting){
+        const id=en.target.id;
+        document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+        const j=document.getElementById('jump'); if(j) j.value=id;
+      }});
+    },{rootMargin:'-15% 0px -75% 0px'});
+    document.querySelectorAll('section.scope,#finish').forEach(s=>io.observe(s));
+  }catch(e){}
+}
+
+renderSections(); updateProgress(); observe();
+</script>
+</body>
+</html>
